@@ -10,3 +10,4 @@ Dockerfile
 docker-compose.yml
 Caddyfile
 *.md
+frontend/
