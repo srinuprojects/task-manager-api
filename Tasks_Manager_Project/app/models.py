@@ -2,6 +2,7 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, f
 from sqlalchemy.orm import relationship
 
 from app.database import Base
+from app.s3 import generate_download_url
 
 
 class User(Base):
@@ -22,8 +23,12 @@ class Task(Base):
     title = Column(String, nullable=False)
     description = Column(String, nullable=True)
     completed = Column(Boolean, default=False, nullable=False)
-    file_url = Column(String, nullable=True)
+    file_key = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     owner = relationship("User", back_populates="tasks")
+
+    @property
+    def file_url(self):
+        return generate_download_url(self.file_key)

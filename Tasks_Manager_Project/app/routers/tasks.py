@@ -86,8 +86,7 @@ def upload_task_file(
     current_user: models.User = Depends(get_current_user),
 ):
     task = _get_owned_task(task_id, db, current_user)
-    file_url = upload_file_to_s3(file, key_prefix=f"tasks/{task.id}")
-    task.file_url = file_url
+    task.file_key = upload_file_to_s3(file, key_prefix=f"tasks/{task.id}")
     db.commit()
     db.refresh(task)
     return task
