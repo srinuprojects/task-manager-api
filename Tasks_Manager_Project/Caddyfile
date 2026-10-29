@@ -1,0 +1,20 @@
+{$DOMAIN} {
+	encode gzip
+
+	# Slightly above MAX_UPLOAD_MB so the app can return a clear 413 message
+	request_body {
+		max_size 11MB
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+
+	reverse_proxy api:8000
+
+	log
+}
