@@ -18,7 +18,8 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+# Relative so the /docs "Authorize" button also works under the /api prefix
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 def hash_password(password: str) -> str:

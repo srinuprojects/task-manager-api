@@ -1,11 +1,6 @@
 {$DOMAIN} {
 	encode gzip
 
-	# Slightly above MAX_UPLOAD_MB so the app can return a clear 413 message
-	request_body {
-		max_size 11MB
-	}
-
 	header {
 		Strict-Transport-Security "max-age=31536000"
 		X-Content-Type-Options "nosniff"
@@ -14,7 +9,22 @@
 		-Server
 	}
 
-	reverse_proxy api:8000
+	# Backend: /api/tasks -> api:8000/tasks
+	handle_path /api/* {
+		# Slightly above MAX_UPLOAD_MB so the app can return a clear 413 message
+		request_body {
+			max_size 11MB
+		}
+		reverse_proxy api:8000
+	}
+
+	# Frontend: built React files; unknown paths fall back to index.html
+	handle {
+		header Content-Security-Policy "default-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
 
 	log
 }

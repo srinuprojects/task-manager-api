@@ -22,14 +22,17 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-taskmanager}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-taskmanager_db}
+      ROOT_PATH: /api
     depends_on:
       db:
         condition: service_healthy
     expose:
       - "8000"
 
+  # Caddy image with the built React frontend inside (see frontend/Dockerfile)
   caddy:
-    image: caddy:2-alpine
+    build: ./frontend
+    image: task-manager-web
     restart: unless-stopped
     environment:
       DOMAIN: ${DOMAIN:?set DOMAIN in .env}
